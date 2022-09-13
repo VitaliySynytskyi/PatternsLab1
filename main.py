@@ -119,3 +119,8 @@ class Professor:
 
     def check_assigment(self, assignment: dict):
         pass
+
+
+if __name__ == "__main__":
+    Professor1 = Professor("Kevin Lane", "9592 Colonial Estates", "291-302-0543", "kevinlane@gmail.com", 5000)
+    print(vars(Professor1))
