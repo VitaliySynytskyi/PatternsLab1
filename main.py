@@ -28,10 +28,20 @@ class Student:
             print("None")
 
     def enroll(self, course) -> None:
-        pass
+        if course in self.courses:
+            print("".concat(self.full_name, " currently enroll this course"))   
+        else:
+            self.courses = self.courses.append(course)
+            print("".concat(self.full_name, " enrolled this course"))
+        
 
     def unenroll(self, course) -> None:
-        pass
+        if not(course in self.courses):
+            print("".concat(self.full_name, " currently unenrolled this course")) 
+        else:
+            self.courses = self.courses.pop(course)
+            print("".concat(self.full_name, " unenrolled this course"))
+        
 
 
 class CourseProgress:
@@ -118,7 +128,10 @@ class Professor:
         self.salary = salary
 
     def check_assigment(self, assignment: dict):
-        pass
+        if (assignment.is_done):
+            print("Assignment is done. You can get your mark: 5.")
+        else:
+            print("Assignment isn't done. You can't get your mark.")
 
 
 if __name__ == "__main__":
