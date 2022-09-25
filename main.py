@@ -71,13 +71,14 @@ class CourseProgress:
             marks.append(assignments.get('mark'))
         return sum(marks) / len(marks)
 
-    def fill_notes(self, note: str) -> None:
+    def fill_notes(self, date: date, note: str) -> None:
         date = datetime.now()
-        self.notes.update({date: note})
+        self.notes.append({date: note})
 
-    def remove_note(self, date: datetime):
-        if self.notes.get(date):
+    def remove_note(self, date: date):
+        if self.notes.index(date):
             self.notes.pop({date: self.note})
+
 
 
 class Course:
@@ -135,5 +136,41 @@ class Professor:
 
 
 if __name__ == "__main__":
-    Professor1 = Professor("Kevin Lane", "9592 Colonial Estates", "291-302-0543", "kevinlane@gmail.com", 5000)
+    Professor1 = Professor("Andriy", "Tarnavskogo", "291-302-0543", "someProfessor@gmail.com", 5000)
     print(vars(Professor1))
+# create 2 students
+    VStudent = Student("Vitaliy Syn", "Doroshenka 50", "0971275232", "olehmuz87@gmail.com", 999, 11.5)
+    VStudent2 = Student("Vitaliy Syn", "Doroshenka 50", "0971275232", "olehmuz87@gmail.com", 999, 11.5)
+# create course
+    DesignPatterns = Course("DesignPatterns",
+                 date(2022, 10, 10),
+                 date(2023, 10, 10),
+                 "DesignPatterns",
+                 [],
+                 [],
+                 5)
+# create DesignPatterns Progress and check methods of it;
+    DesignPatternsProgress = CourseProgress([], 0, [], [])
+# create new note
+    DesignPatternsProgress.fill_notes(date(2022, 12, 10), "1231")
+    print(vars(DesignPatternsProgress))
+# remove this note
+    DesignPatternsProgress.remove_note(date(2022, 12, 10))
+    print(vars(DesignPatternsProgress))
+# check methods of Course class
+# /add new student to course
+    DesignPatterns.add_student(VStudent)
+    print(vars(DesignPatterns))
+# add another one, but limit 1 stop adding;
+    DesignPatterns.add_student(VStudent2)
+# limit test
+    DesignPatterns.add_student(VStudent2)
+# removing of student
+    DesignPatterns.remove_student(VStudent)
+    print(vars(DesignPatterns))
+# Student methods
+    VStudent2.can_enroll(DesignPatterns)
+    VStudent2.enroll(DesignPatterns)
+    print(vars(VStudent2))
+    VStudent2.unenroll(DesignPatterns)
+    print(vars(VStudent2))
