@@ -1,60 +1,73 @@
 from __future__ import annotations
 
-from typing import List, Any
+from typing import List
 from datetime import date, datetime
 
 
 class Student:
+    """This class represents student object
 
+    Attributes:
+        full_name (str): Full name of the student.
+        address (str): Student adress.
+        phone_number (str): student's number.
+        
+    """
     def __init__(self,
                  full_name: str,
-                 adress: str,
+                 address: str,
                  phone_number: str,
-                 email: str,
-                 student_number: int,
-                 average_mark: float) -> None:
+                 email: str) -> None:
+        """Student initializer"""
         self.full_name = full_name
-        self.adress = adress
+        self.address = address
         self.phone_number = phone_number
         self.email = email
-        self.student_number = student_number
-        self.average_mark = average_mark
-        self.courses = []
+        self.average_mark = 0.0
+        self.courses: List[Course] = []
 
-    def taken_courses(self) -> List[Any] | None:
+    def taken_courses(self) -> List[Course] | None:
         if self.courses:
             return self.courses
         else:
-            print("None")
+            print("Немає курсів")
 
-    def enroll(self, course) -> None:
+    def enroll(self, course: Course) -> None:
+        """Stands for enrolling current student into course
+
+        Args:
+            course (Course): Course to be enrolled.
+
+        Returns:
+            None.
+            
+        """
+
         if course in self.courses:
-            print("".concat(self.full_name, " currently enroll this course"))   
+            print(self.full_name, " currently enroll this course")  
         else:
-            self.courses = self.courses.append(course)
-            print("".concat(self.full_name, " enrolled this course"))
+            self.courses.append(course)
+            print(self.full_name, " enrolled this course")
         
 
     def unenroll(self, course) -> None:
-        if not(course in self.courses):
-            print("".concat(self.full_name, " currently unenrolled this course")) 
+        if course not in self.courses:
+            print(self.full_name, " currently unenrolled this course")
         else:
-            self.courses = self.courses.pop(course)
-            print("".concat(self.full_name, " unenrolled this course"))
+            self.courses.remove(course)
+            print(self.full_name, " unenrolled this course")
         
 
 
 class CourseProgress:
 
     def __init__(self,
-                 received_marks: dict,
-                 visited_lectures: int,
-                 completed_assigments: dict,
-                 notes: dict) -> None:
+                 received_marks: dict
+                 ) -> None:
         self.received_marks = received_marks
-        self.visited_lectures = visited_lectures
-        self.completed_assigments = completed_assigments
-        self.notes = notes
+        self.visited_lectures = 0
+        self.completed_assigments = {}
+        self.notes = {}
 
     def get_progress_to_date(self,
                              date: datetime) -> float:
@@ -73,7 +86,7 @@ class CourseProgress:
 
     def fill_notes(self, date: date, note: str) -> None:
         date = datetime.now()
-        self.notes.append({date: note})
+        self.notes.update({date: note})
 
     def remove_note(self, date: date):
         if self.notes.index(date):
@@ -88,30 +101,26 @@ class Course:
                  title: str,
                  start_date: datetime,
                  end_date: datetime,
-                 description: str,
-                 lectures: list[str],
-                 assigments: List[dict],
-                 limit: int) -> None:
+                 description: str
+                 ) -> None:
         self.title = title
         self.start_date = start_date
         self.end_date = end_date
         self.description = description
-        self.lectures = lectures
-        self.assigments = assigments
-        self.limit = limit
-        self.students = List[Student]
+        self.lectures = []
+        self.assigments = []
+        self.students: List[Student] = []
 
     def add_student(self, student: Student) -> None:
-        number_students = any
-        if number_students > self.LIMIT:
+        if len(self.students) < Course.LIMIT:
             self.students.append(student)
             student.enroll(course=self)
+        else:
+            print(f"Limit has been exeeded")
 
     def remove_student(self, student: Student) -> None:
-        number_students = any
-        if number_students > self.LIMIT:
-            self.students.pop(student)
-            student.unenroll(course=self)
+        self.students.remove(student)
+        student.unenroll(course=self)
 
 
 class Professor:
@@ -136,41 +145,39 @@ class Professor:
 
 
 if __name__ == "__main__":
-    Professor1 = Professor("Andriy", "Tarnavskogo", "291-302-0543", "someProfessor@gmail.com", 5000)
-    print(vars(Professor1))
+    professor1 = Professor("Andriy", "Tarnavskogo", "291-302-0543", "someProfessor@gmail.com", 5000)
+    print(vars(professor1))
 # create 2 students
-    VStudent = Student("Vitaliy Syn", "Doroshenka 50", "0971275232", "olehmuz87@gmail.com", 999, 11.5)
-    VStudent2 = Student("Vitaliy Syn", "Doroshenka 50", "0971275232", "olehmuz87@gmail.com", 999, 11.5)
+    vstudent = Student(full_name="Vitaliy Syn", 
+                       address="Doroshenka 50", 
+                       phone_number="0971275232", 
+                       email="Vitaliy1@gmail.com")
+    vstudent2 = Student(full_name="Vitaliy Syn2", 
+                       address="Doroshenka 50", 
+                       phone_number="0971275232", 
+                       email="Vitaliy2@gmail.com")
 # create course
-    DesignPatterns = Course("DesignPatterns",
+    design_patterns = Course("DesignPatterns",
                  date(2022, 10, 10),
                  date(2023, 10, 10),
-                 "DesignPatterns",
-                 [],
-                 [],
-                 5)
+                 "DesignPatterns")
 # create DesignPatterns Progress and check methods of it;
-    DesignPatternsProgress = CourseProgress([], 0, [], [])
+    design_patterns_progress = CourseProgress(received_marks={})
 # create new note
-    DesignPatternsProgress.fill_notes(date(2022, 12, 10), "1231")
-    print(vars(DesignPatternsProgress))
+    design_patterns_progress.fill_notes(date(2022, 12, 15), "1231")
 # remove this note
-    DesignPatternsProgress.remove_note(date(2022, 12, 10))
-    print(vars(DesignPatternsProgress))
+    # DesignPatternsProgress.remove_note(date(2022, 12, 15))
+    # print(vars(DesignPatternsProgress))
 # check methods of Course class
 # /add new student to course
-    DesignPatterns.add_student(VStudent)
-    print(vars(DesignPatterns))
+    design_patterns.add_student(vstudent)
 # add another one, but limit 1 stop adding;
-    DesignPatterns.add_student(VStudent2)
+    design_patterns.add_student(vstudent2)
 # limit test
-    DesignPatterns.add_student(VStudent2)
+    #design_patterns.add_student(vstudent2)
 # removing of student
-    DesignPatterns.remove_student(VStudent)
-    print(vars(DesignPatterns))
 # Student methods
-    VStudent2.can_enroll(DesignPatterns)
-    VStudent2.enroll(DesignPatterns)
-    print(vars(VStudent2))
-    VStudent2.unenroll(DesignPatterns)
-    print(vars(VStudent2))
+    vstudent2.unenroll(design_patterns)
+    vstudent2.enroll(design_patterns)
+    
+    help(Student)
