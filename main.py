@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 from typing import List
 from datetime import date, datetime
 
@@ -9,10 +8,10 @@ class Student:
 
     Attributes:
         full_name (str): Full name of the student.
-        address (str): Student adress.
+        address (str): Student's adress.
         phone_number (str): student's number.
-        
     """
+
     def __init__(self,
                  full_name: str,
                  address: str,
@@ -27,10 +26,17 @@ class Student:
         self.courses: List[Course] = []
 
     def taken_courses(self) -> List[Course] | None:
+        """Іelected courses
+
+        Args:
+            courses (Course): Course to be enrolled.
+
+        Returns:
+            self.courses
+        """
+
         if self.courses:
             return self.courses
-        else:
-            print("Немає курсів")
 
     def enroll(self, course: Course) -> None:
         """Stands for enrolling current student into course
@@ -40,15 +46,13 @@ class Student:
 
         Returns:
             None.
-            
         """
 
         if course in self.courses:
-            print(self.full_name, " currently enroll this course")  
+            print(self.full_name, " currently enroll this course")
         else:
             self.courses.append(course)
             print(self.full_name, " enrolled this course")
-        
 
     def unenroll(self, course) -> None:
         if course not in self.courses:
@@ -56,10 +60,14 @@ class Student:
         else:
             self.courses.remove(course)
             print(self.full_name, " unenrolled this course")
-        
 
 
 class CourseProgress:
+    """This class represents course progress
+
+    Attributes:
+        received_marks (dict): Marks received by a student
+    """
 
     def __init__(self,
                  received_marks: dict
@@ -72,14 +80,16 @@ class CourseProgress:
 
     def get_progress_to_date(self,
                              date: datetime) -> float:
-        assignments = [value for key, value in self.completed_assigments.items() if key <= date]
+        assignments = [value for key,
+                       value in self.completed_assigments.items() if key <= date]
         marks = []
         for assignment in assignments:
             marks.append(assignments.get('mark'))
         return sum(marks) / len(marks)
 
     def get_final_mark(self) -> None:
-        assignments = [value for key, value in self.completed_assigments.items()]
+        assignments = [value for key,
+                       value in self.completed_assigments.items()]
         marks = []
         for assignment in assignments:
             marks.append(assignments.get('mark'))
@@ -92,8 +102,15 @@ class CourseProgress:
         del self.notes[date]
 
 
-
 class Course:
+    """This class represents course object
+
+    Attributes:
+        title (str): Tittle of the course
+        start_date (datetime): Start date of the course
+        end_date (datetime): End date of the course
+        description (str): Description of the course
+    """
     LIMIT = 30
 
     def __init__(self,
@@ -102,7 +119,7 @@ class Course:
                  end_date: datetime,
                  description: str
                  ) -> None:
-        """Course initializer"""        
+        """Course initializer"""
         self.title = title
         self.start_date = start_date
         self.end_date = end_date
@@ -124,6 +141,15 @@ class Course:
 
 
 class Professor:
+    """This class represents course object
+
+    Attributes:
+        name (str): Name of the professor.
+        address (str): Professor's address
+        phone_number (str): Professor's phone number
+        email (str): Professor's email
+        salary (float): Professor's salary
+    """
 
     def __init__(self,
                  name: str,
@@ -139,29 +165,30 @@ class Professor:
         self.salary = salary
 
     def check_assigment(self, assignment: dict):
-        if (assignment.is_done):
+        if assignment.is_done:
             print("Assignment is done. You can get your mark: 5.")
         else:
             print("Assignment isn't done. You can't get your mark.")
 
 
 if __name__ == "__main__":
-    professor1 = Professor("Andriy", "Tarnavskogo", "291-302-0543", "someProfessor@gmail.com", 5000)
+    professor1 = Professor("Andriy", "Tarnavskogo",
+                           "291-302-0543", "someProfessor@gmail.com", 5000)
     print(vars(professor1))
 # create 2 students
-    vstudent = Student(full_name="Vitaliy Syn", 
-                       address="Doroshenka 50", 
-                       phone_number="0971275232", 
+    vstudent = Student(full_name="Vitaliy Syn",
+                       address="Doroshenka 50",
+                       phone_number="0971275232",
                        email="Vitaliy1@gmail.com")
-    vstudent2 = Student(full_name="Vitaliy Syn2", 
-                       address="Doroshenka 50", 
-                       phone_number="0971275232", 
-                       email="Vitaliy2@gmail.com")
+    vstudent2 = Student(full_name="Vitaliy Syn2",
+                        address="Doroshenka 50",
+                        phone_number="0971275232",
+                        email="Vitaliy2@gmail.com")
 # create course
     design_patterns = Course("DesignPatterns",
-                 date(2022, 10, 10),
-                 date(2023, 10, 10),
-                 "DesignPatterns")
+                             date(2022, 10, 10),
+                             date(2023, 10, 10),
+                             "DesignPatterns")
     print(vars(design_patterns))
 # create DesignPatterns Progress and check methods of it;
     design_patterns_progress = CourseProgress(received_marks={})
@@ -182,5 +209,5 @@ if __name__ == "__main__":
 # Student methods
     vstudent2.unenroll(design_patterns)
     vstudent2.enroll(design_patterns)
-    
+
     #help(Student)
