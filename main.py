@@ -64,6 +64,7 @@ class CourseProgress:
     def __init__(self,
                  received_marks: dict
                  ) -> None:
+        """CourseProgress initializer"""
         self.received_marks = received_marks
         self.visited_lectures = 0
         self.completed_assigments = {}
@@ -85,12 +86,10 @@ class CourseProgress:
         return sum(marks) / len(marks)
 
     def fill_notes(self, date: date, note: str) -> None:
-        date = datetime.now()
         self.notes.update({date: note})
 
     def remove_note(self, date: date):
-        if self.notes.index(date):
-            self.notes.pop({date: self.note})
+        del self.notes[date]
 
 
 
@@ -103,6 +102,7 @@ class Course:
                  end_date: datetime,
                  description: str
                  ) -> None:
+        """Course initializer"""        
         self.title = title
         self.start_date = start_date
         self.end_date = end_date
@@ -131,6 +131,7 @@ class Professor:
                  phone_number: str,
                  email: str,
                  salary: float) -> None:
+        """Professor initializer"""
         self.name = name
         self.address = address
         self.phone_number = phone_number
@@ -161,13 +162,15 @@ if __name__ == "__main__":
                  date(2022, 10, 10),
                  date(2023, 10, 10),
                  "DesignPatterns")
+    print(vars(design_patterns))
 # create DesignPatterns Progress and check methods of it;
     design_patterns_progress = CourseProgress(received_marks={})
 # create new note
-    design_patterns_progress.fill_notes(date(2022, 12, 15), "1231")
+    design_patterns_progress.fill_notes(date(2022, 10, 11), "1231")
+    print(vars(design_patterns_progress))
 # remove this note
-    # DesignPatternsProgress.remove_note(date(2022, 12, 15))
-    # print(vars(DesignPatternsProgress))
+    design_patterns_progress.remove_note(date(2022, 10, 11))
+    print(vars(design_patterns_progress))
 # check methods of Course class
 # /add new student to course
     design_patterns.add_student(vstudent)
@@ -180,4 +183,4 @@ if __name__ == "__main__":
     vstudent2.unenroll(design_patterns)
     vstudent2.enroll(design_patterns)
     
-    help(Student)
+    #help(Student)
