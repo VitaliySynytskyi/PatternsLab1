@@ -1,3 +1,4 @@
+"""Assignment1"""
 from __future__ import annotations
 from typing import List
 from datetime import date, datetime
@@ -26,7 +27,7 @@ class Student:
         self.courses: List[Course] = []
 
     def taken_courses(self) -> List[Course] | None:
-        """Іelected courses
+        """Selected courses
 
         Args:
             courses (Course): Course to be enrolled.
@@ -35,8 +36,7 @@ class Student:
             self.courses
         """
 
-        if self.courses:
-            return self.courses
+        return self.courses
 
     def enroll(self, course: Course) -> None:
         """Stands for enrolling current student into course
@@ -55,6 +55,15 @@ class Student:
             print(self.full_name, " enrolled this course")
 
     def unenroll(self, course) -> None:
+        """Stands for unenrolling current student into course
+
+        Args:
+            course (Course): Course to be unenrolled.
+
+        Returns:
+            None.
+        """
+
         if course not in self.courses:
             print(self.full_name, " currently unenrolled this course")
         else:
@@ -78,27 +87,63 @@ class CourseProgress:
         self.completed_assigments = {}
         self.notes = {}
 
-    def get_progress_to_date(self,
-                             date: datetime) -> float:
+    def get_progress_to_date(self, date: date) -> float:
+        """Progress to date
+
+        Args:
+            date (datetime): Current date by which to look for marks.
+
+        Returns:
+            The sum of points is divided by the number of grades before that date.
+        """
+
         assignments = [value for key,
                        value in self.completed_assigments.items() if key <= date]
         marks = []
         for assignment in assignments:
-            marks.append(assignments.get('mark'))
+            marks.append(assignment.get('mark'))
         return sum(marks) / len(marks)
 
     def get_final_mark(self) -> None:
+        """Progress to final
+
+        Args:
+            None.
+
+        Returns:
+            The sum of points is divided by the final number of marks.
+        """
+
         assignments = [value for key,
                        value in self.completed_assigments.items()]
         marks = []
         for assignment in assignments:
-            marks.append(assignments.get('mark'))
+            marks.append(assignment.get('mark'))
         return sum(marks) / len(marks)
 
     def fill_notes(self, date: date, note: str) -> None:
+        """A note for the date is attached
+
+        Args:
+            date (date): Date of adding the note
+            note (str): Note that is attached
+
+        Returns:
+            None.
+        """
+
         self.notes.update({date: note})
 
     def remove_note(self, date: date):
+        """A note for the date is deleted
+
+        Args:
+            date (date): Date to delete the note
+
+        Returns:
+            None.
+        """
+
         del self.notes[date]
 
 
@@ -129,13 +174,31 @@ class Course:
         self.students: List[Student] = []
 
     def add_student(self, student: Student) -> None:
+        """Stands for enrolling current student into course
+
+        Args:
+            student (Student): Student to be enrolled.
+
+        Returns:
+            None.
+        """
+
         if len(self.students) < Course.LIMIT:
             self.students.append(student)
             student.enroll(course=self)
         else:
-            print(f"Limit has been exeeded")
+            print("Limit has been exeeded")
 
     def remove_student(self, student: Student) -> None:
+        """Stands for enrolling uncurrent student into course
+
+        Args:
+            student (Student): Student to be unenrolled.
+
+        Returns:
+            None.
+        """
+
         self.students.remove(student)
         student.unenroll(course=self)
 
@@ -165,13 +228,22 @@ class Professor:
         self.salary = salary
 
     def check_assigment(self, assignment: dict):
+        """Сhecking the task and assessment
+
+        Args:
+            assignment (dict): The task to be checked
+
+        Returns:
+            None.
+        """
+
         if assignment.is_done:
             print("Assignment is done. You can get your mark: 5.")
         else:
             print("Assignment isn't done. You can't get your mark.")
 
-
-if __name__ == "__main__":
+def main():
+    """main function"""
     professor1 = Professor("Andriy", "Tarnavskogo",
                            "291-302-0543", "someProfessor@gmail.com", 5000)
     print(vars(professor1))
@@ -211,3 +283,6 @@ if __name__ == "__main__":
     vstudent2.enroll(design_patterns)
 
     #help(Student)
+
+if __name__ == "__main__":
+    main()
