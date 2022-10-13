@@ -1,7 +1,9 @@
-"""Assignment1"""
+"""Assignment2"""
 from __future__ import annotations
-from typing import List
+from dataclasses import dataclass
+from typing import Any, List
 from datetime import date, datetime
+from collections import defaultdict
 
 
 class Student:
@@ -9,7 +11,7 @@ class Student:
 
     Attributes:
         full_name (str): Full name of the student.
-        address (str): Student's adress.
+        address (str): Student's address.
         phone_number (str): student's number.
     """
 
@@ -26,49 +28,8 @@ class Student:
         self.average_mark = 0.0
         self.courses: List[Course] = []
 
-    def taken_courses(self) -> List[Course] | None:
-        """Selected courses
-
-        Args:
-            courses (Course): Course to be enrolled.
-
-        Returns:
-            self.courses
-        """
-
-        return self.courses
-
-    def enroll(self, course: Course) -> None:
-        """Stands for enrolling current student into course
-
-        Args:
-            course (Course): Course to be enrolled.
-
-        Returns:
-            None.
-        """
-
-        if course in self.courses:
-            print(self.full_name, " currently enroll this course")
-        else:
-            self.courses.append(course)
-            print(self.full_name, " enrolled this course")
-
-    def unenroll(self, course) -> None:
-        """Stands for unenrolling current student into course
-
-        Args:
-            course (Course): Course to be unenrolled.
-
-        Returns:
-            None.
-        """
-
-        if course not in self.courses:
-            print(self.full_name, " currently unenrolled this course")
-        else:
-            self.courses.remove(course)
-            print(self.full_name, " unenrolled this course")
+    def get_taken_courses(self, enrollment) -> List[str]:
+        return enrollment.student_courses[self.id]
 
 
 class CourseProgress:
@@ -84,7 +45,7 @@ class CourseProgress:
         """CourseProgress initializer"""
         self.received_marks = received_marks
         self.visited_lectures = 0
-        self.completed_assigments = {}
+        self.completed_assignments = {}
         self.notes = {}
 
     def get_progress_to_date(self, date: date) -> float:
@@ -98,7 +59,7 @@ class CourseProgress:
         """
 
         assignments = [value for key,
-                       value in self.completed_assigments.items() if key <= date]
+                                 value in self.completed_assignments.items() if key <= date]
         marks = []
         for assignment in assignments:
             marks.append(assignment.get('mark'))
@@ -115,7 +76,7 @@ class CourseProgress:
         """
 
         assignments = [value for key,
-                       value in self.completed_assigments.items()]
+                                 value in self.completed_assignments.items()]
         marks = []
         for assignment in assignments:
             marks.append(assignment.get('mark'))
@@ -162,7 +123,7 @@ class Course:
                  title: str,
                  start_date: datetime,
                  end_date: datetime,
-                 description: str
+                 description: str,
                  ) -> None:
         """Course initializer"""
         self.title = title
@@ -170,37 +131,12 @@ class Course:
         self.end_date = end_date
         self.description = description
         self.lectures = []
-        self.assigments = []
+        self.assignments = []
         self.students: List[Student] = []
+        self.seminars: List[int]
 
-    def add_student(self, student: Student) -> None:
-        """Stands for enrolling current student into course
-
-        Args:
-            student (Student): Student to be enrolled.
-
-        Returns:
-            None.
-        """
-
-        if len(self.students) < Course.LIMIT:
-            self.students.append(student)
-            student.enroll(course=self)
-        else:
-            print("Limit has been exeeded")
-
-    def remove_student(self, student: Student) -> None:
-        """Stands for enrolling uncurrent student into course
-
-        Args:
-            student (Student): Student to be unenrolled.
-
-        Returns:
-            None.
-        """
-
-        self.students.remove(student)
-        student.unenroll(course=self)
+    def get_student_ids(self, enrollment) -> List[int]:
+        return enrollment.course_students[self.title]
 
 
 class Professor:
@@ -228,7 +164,7 @@ class Professor:
         self.salary = salary
 
     def check_assigment(self, assignment: dict):
-        """Сhecking the task and assessment
+        """Checking the task and assessment
 
         Args:
             assignment (dict): The task to be checked
@@ -242,47 +178,137 @@ class Professor:
         else:
             print("Assignment isn't done. You can't get your mark.")
 
+
+@dataclass
+class PersonalInfo:
+    id: int
+    full_name: str
+    address: str
+    phone_number: str
+    email: str
+    position: int
+    rank: str
+    salary: float
+
+    @property
+    def first_name(self) -> str:
+        return self.full_name.split()[0]
+
+    @property
+    def last_name(self) -> str:
+        return self.full_name.split()[1]
+
+
+class Department:
+    """This class represents student object
+
+    Attributes:
+    title (str):
+    students (List[Student]):
+    professors (List[Professor]):
+    courses (List[str]):   course names
+    requests (dict(str, bool)):  contains requests from the staff
+    """
+
+    title: str
+    students: List[Student]
+    professors: List[Professor]
+    courses: List[str]  # course names
+    requests: dict(str, bool)  # contains requests from the staff
+
+    def proceed_requests(self, request: str) -> Any:
+        if request in self.requests:
+            self.requests[request] = True
+            print(f"Request - {self.requests[request]} is done")
+            return True
+
+        print(f"Request {request} not found")
+        return False
+
+
+class Staff:
+    personal_info: PersonalInfo
+
+    def ask_sick_leave(self, department: Department) -> bool:
+        department.requests.update("Ask for leave", False)
+        return False
+
+    def send_request(self, department: Department, request: str) -> bool:
+        department.requests.update(request, False)
+        return True
+
+class Student(Staff):
+    def send_request(self, department: Department, request: str) -> bool:
+        department.requests.update(request, False)
+        return True
+
+    def ask_sick_leave(self, department: Department) -> bool:
+        department.requests.update("Ask for leave", False)
+        return False
+
+
+class Seminar:
+    id: int
+    title: str
+    deadline: datetime
+    assignments: List[dict]
+    status: Any
+    related_course: str  # course name
+
+    def implement_item(self, item_name: str) -> str:
+        pass
+
+    def add_comment(self, comment: str) -> None:
+        pass
+
+
+class Enrollment:
+
+    def __init__(self) -> None:
+        self.student_courses = defaultdict(list)
+        self.course_students = defaultdict(list)
+        self.postgraduate_student = defaultdict(list)
+
+    def enroll(self, student_id: int, course_title: str) -> None:
+
+        if student_id in self.student_courses:
+            print(self.full_name, " currently enroll this course")
+        else:
+            self.student_courses[student_id].append(course_title)
+            self.course_students[course_title].append(student_id)
+            print(self.full_name, " enrolled this course")
+
+    def unenroll(self, student_id: int, course_title: str) -> None:
+
+        if student_id not in self.student_courses:
+            print(self.full_name, " currently unenrolled this course")
+        else:
+            del self.student_courses[course_title]
+            del self.course_students[student_id]
+            print(self.full_name, " unenrolled this course")
+
+
+class Professor(Staff):
+    def send_request(self, department: Department, request: str) -> bool:
+        department.requests.update(request, False)
+        return True
+
+    def ask_sick_leave(self, department: Department) -> bool:
+        department.requests.update("Ask for leave", False)
+        return False
+
+    def add_postgraduate_student(self, student_id: int) -> None:
+        self.postgraduate_student.append(student_id)
+        del self.course_students[student_id]
+
+    def request_support(self, request: str) -> None:
+        pass
+
+
+
 def main():
     """main function"""
-    professor1 = Professor("Andriy", "Tarnavskogo",
-                           "291-302-0543", "someProfessor@gmail.com", 5000)
-    print(vars(professor1))
-# create 2 students
-    vstudent = Student(full_name="Vitaliy Syn",
-                       address="Doroshenka 50",
-                       phone_number="0971275232",
-                       email="Vitaliy1@gmail.com")
-    vstudent2 = Student(full_name="Vitaliy Syn2",
-                        address="Doroshenka 50",
-                        phone_number="0971275232",
-                        email="Vitaliy2@gmail.com")
-# create course
-    design_patterns = Course("DesignPatterns",
-                             date(2022, 10, 10),
-                             date(2023, 10, 10),
-                             "DesignPatterns")
-    print(vars(design_patterns))
-# create DesignPatterns Progress and check methods of it;
-    design_patterns_progress = CourseProgress(received_marks={})
-# create new note
-    design_patterns_progress.fill_notes(date(2022, 10, 11), "1231")
-    print(vars(design_patterns_progress))
-# remove this note
-    design_patterns_progress.remove_note(date(2022, 10, 11))
-    print(vars(design_patterns_progress))
-# check methods of Course class
-# /add new student to course
-    design_patterns.add_student(vstudent)
-# add another one, but limit 1 stop adding;
-    design_patterns.add_student(vstudent2)
-# limit test
-    #design_patterns.add_student(vstudent2)
-# removing of student
-# Student methods
-    vstudent2.unenroll(design_patterns)
-    vstudent2.enroll(design_patterns)
 
-    #help(Student)
 
 if __name__ == "__main__":
     main()
