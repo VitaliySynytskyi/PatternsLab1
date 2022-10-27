@@ -1,35 +1,60 @@
-"""Assignment2"""
-from __future__ import annotations
-from dataclasses import dataclass
-from typing import Any, List
 from datetime import date, datetime
-from collections import defaultdict
+from typing import List, Any
+from dataclasses import dataclass
+from abc import ABC, abstractmethod
 
 
-class Student:
-    """This class represents student object
+@dataclass
+class PersonalInfo:
+    """Data class with personal information"""
 
-    Attributes:
-        full_name (str): Full name of the student.
-        address (str): Student's address.
-        phone_number (str): student's number.
-    """
+    id: int
+    name: str
+    adress: str
+    phone_number: str
+    email: str
+    position: int
+    rank: str
+    salary: float
 
-    def __init__(self,
-                 full_name: str,
-                 address: str,
-                 phone_number: str,
-                 email: str) -> None:
-        """Student initializer"""
-        self.full_name = full_name
-        self.address = address
-        self.phone_number = phone_number
-        self.email = email
-        self.average_mark = 0.0
+    @property
+    def first_name(self) -> str:
+        return self.name.split()[0]
+
+    @property
+    def last_name(self) -> str:
+        return self.name.split()[1]
+
+
+class Department:
+    def __init__(self, title: str):
+        self.title = title
+        self.students: List[Student] = []
+        self.professors: List[Professor] = []
         self.courses: List[Course] = []
+        self.requests: List[str] = []
+        self.ill_person: List[str] = []
 
-    def get_taken_courses(self, enrollment) -> List[str]:
-        return enrollment.student_courses[self.id]
+    def get_ill_person(self):
+        """Return a list of ill person"""
+        return self.ill_person
+
+    def get_requests(self):
+        """Return a list of requests"""
+        return self.requests
+
+
+class Staff(ABC):
+    def __init__(self, _pesonal_info: PersonalInfo):
+        self._persoanl_info = _pesonal_info
+
+    @abstractmethod
+    def ask_sick_leave(self, department: Department) -> bool:
+        pass
+
+    @abstractmethod
+    def send_request(self, department: Department) -> bool:
+        pass
 
 
 class CourseProgress:
@@ -45,7 +70,7 @@ class CourseProgress:
         """CourseProgress initializer"""
         self.received_marks = received_marks
         self.visited_lectures = 0
-        self.completed_assignments = {}
+        self.completed_assigments = {}
         self.notes = {}
 
     def get_progress_to_date(self, date: date) -> float:
@@ -59,7 +84,7 @@ class CourseProgress:
         """
 
         assignments = [value for key,
-                                 value in self.completed_assignments.items() if key <= date]
+                       value in self.completed_assigments.items() if key <= date]
         marks = []
         for assignment in assignments:
             marks.append(assignment.get('mark'))
@@ -76,7 +101,7 @@ class CourseProgress:
         """
 
         assignments = [value for key,
-                                 value in self.completed_assignments.items()]
+                       value in self.completed_assigments.items()]
         marks = []
         for assignment in assignments:
             marks.append(assignment.get('mark'))
@@ -108,215 +133,173 @@ class CourseProgress:
         del self.notes[date]
 
 
+
 class Course:
-    """This class represents course object
-
-    Attributes:
-        title (str): Tittle of the course
-        start_date (datetime): Start date of the course
-        end_date (datetime): End date of the course
-        description (str): Description of the course
-    """
-    LIMIT = 30
-
-    def __init__(self,
-                 title: str,
-                 start_date: datetime,
-                 end_date: datetime,
-                 description: str,
-                 ) -> None:
-        """Course initializer"""
+    def __init__(
+        self,
+        title: str,
+        star_date: datetime,
+        end_date: datetime,
+        description: str,
+        lectures: list[str],
+        assigments: list[str],
+        limit: int,
+    ):
         self.title = title
-        self.start_date = start_date
+        self.start_date = star_date
         self.end_date = end_date
         self.description = description
-        self.lectures = []
-        self.assignments = []
-        self.students: List[Student] = []
-        self.seminars: List[int]
+        self.lectures = lectures
+        self.assigments = assigments
+        self.limit = limit
+        self.students = []
+        self.seminars: List[int] = []
 
-    def get_student_ids(self, enrollment) -> List[int]:
-        return enrollment.course_students[self.title]
+    # Returns a list of students from the course
+    def check_students(self):
+        """Returns the list of students enrolled in the course"""
+        return self.students
 
-
-class Professor:
-    """This class represents course object
-
-    Attributes:
-        name (str): Name of the professor.
-        address (str): Professor's address
-        phone_number (str): Professor's phone number
-        email (str): Professor's email
-        salary (float): Professor's salary
-    """
-
-    def __init__(self,
-                 name: str,
-                 address: str,
-                 phone_number: str,
-                 email: str,
-                 salary: float) -> None:
-        """Professor initializer"""
-        self.name = name
-        self.address = address
-        self.phone_number = phone_number
-        self.email = email
-        self.salary = salary
-
-    def check_assigment(self, assignment: dict):
-        """Checking the task and assessment
-
-        Args:
-            assignment (dict): The task to be checked
-
-        Returns:
-            None.
-        """
-
-        if assignment.is_done:
-            print("Assignment is done. You can get your mark: 5.")
-        else:
-            print("Assignment isn't done. You can't get your mark.")
-
-
-@dataclass
-class PersonalInfo:
-    id: int
-    full_name: str
-    address: str
-    phone_number: str
-    email: str
-    position: int
-    rank: str
-    salary: float
-
-    @property
-    def first_name(self) -> str:
-        return self.full_name.split()[0]
-
-    @property
-    def last_name(self) -> str:
-        return self.full_name.split()[1]
-
-
-class Department:
-    """This class represents student object
-
-    Attributes:
-    title (str):
-    students (List[Student]):
-    professors (List[Professor]):
-    courses (List[str]):   course names
-    requests (dict(str, bool)):  contains requests from the staff
-    """
-
-    title: str
-    students: List[Student]
-    professors: List[Professor]
-    courses: List[str]  # course names
-    requests: dict(str, bool)  # contains requests from the staff
-
-    def proceed_requests(self, request: str) -> Any:
-        if request in self.requests:
-            self.requests[request] = True
-            print(f"Request - {self.requests[request]} is done")
-            return True
-
-        print(f"Request {request} not found")
-        return False
-
-
-class Staff:
-    personal_info: PersonalInfo
-
-    def ask_sick_leave(self, department: Department) -> bool:
-        department.requests.update("Ask for leave", False)
-        return False
-
-    def send_request(self, department: Department, request: str) -> bool:
-        department.requests.update(request, False)
-        return True
-
-class Student(Staff):
-    def send_request(self, department: Department, request: str) -> bool:
-        department.requests.update(request, False)
-        return True
-
-    def ask_sick_leave(self, department: Department) -> bool:
-        department.requests.update("Ask for leave", False)
-        return False
+    
 
 
 class Seminar:
-    id: int
-    title: str
-    deadline: datetime
-    assignments: List[dict]
-    status: Any
-    related_course: str  # course name
-
-    def implement_item(self, item_name: str) -> str:
+    def __init__(
+        self,
+        id: int,
+        title: str,
+        deadline: datetime,
+        assignments: List[dict],
+        status: Any,
+        related_course: str,
+    ):
         pass
 
-    def add_comment(self, comment: str) -> None:
+    def implement_item(item_name: str) -> str:
         pass
+
+
+class Student(Staff):
+    def __init__(
+        self,
+        name: str,
+        address: str,
+        phone_number: str,
+        email: str,
+        course_progress: CourseProgress,
+    ):
+        self._personal_info = PersonalInfo(
+            None, name, None, None, None, None, None, None
+        )
+        self.average_mark = 0.0
+        self.course_progress = course_progress
+        self.courses = []
+
+    def ask_sick_leave(self, department: Department):
+        """Add student name to list of ill person and allow not to go to class"""
+        department.ill_person.append(f"student {self._personal_info.first_name} is ill")
+        print(f"{self._personal_info.first_name} you can not go to class today")
+
+    def send_request(self, department: Department):
+        """Add student request to list of requests"""
+        reques = input("Write your request:")
+        department.requests.append(
+            f"Student {self._personal_info.first_name} want to {reques}"
+        )
+
+    def taken_course(self):
+        """Returns the courses for which the student is enrolled"""
+        return self.courses
+
+
+class PostGraduateStudent(Student):
+    def __init__(self, phd_status: str):
+        self.phd_status = phd_status
+
+
+class Professor:
+    def __init__(
+        self, name: str, address: str, phone_numer: str, email: str, salary: float
+    ):
+        self._personal_info = PersonalInfo(
+            None, name, None, None, None, None, None, None
+        )
+
+    def check_assignment(self, assigment: dict):
+        """Checks the assignment and assigns a grade for it"""
+        if assigment["is_done"]:
+            assigment["mark"] = 5.0
+        else:
+            assigment["mark"] = 1.0
+        print(f"{self._personal_info.first_name} check your assigment")
+        print(f"Your mark:{assigment['mark']}")
+
+    def request_support(self, department: Department):
+        """Add professor request to list of requests"""
+        request = input("Write your request:")
+        department.requests.append(
+            f"Professor {self._personal_info.first_name} want to {request}"
+        )
+
+    def add_postgraduate_student(self, student: PostGraduateStudent):
+        self.postgraduate_student.append(id)
+        del self.course_students[id]
+
+    def ask_sick_leave(self, department: Department) -> bool:
+        """Add professor name to list of ill person and allows not to conduct the lesson if he finds a replacement"""
+        department.ill_person.append(
+            f"Professor {self._personal_info.first_name} is ill"
+        )
+        print(f"{self._personal_info.first_name} you must find a replacement")
+
+    def send_request(self, department: Department) -> bool:
+        """Add professor request to list of requests"""
+        request = input("Write your request:")
+        department.requests.append(
+            f"Professor {self._personal_info.first_name} want to {request}"
+        )
 
 
 class Enrollment:
-
-    def __init__(self) -> None:
-        self.student_courses = defaultdict(list)
-        self.course_students = defaultdict(list)
-        self.postgraduate_student = defaultdict(list)
-
-    def enroll(self, student_id: int, course_title: str) -> None:
-
-        if student_id in self.student_courses:
-            print(self.full_name, " currently enroll this course")
+    @staticmethod
+    def enroll(course: Course, student: Student):
+        """If there are places for the course add student name to list of students on the course and course title to list of courses"""
+        if (
+            course.limit > len(course.students)
+            and student._personal_info.name not in course.students
+        ):
+            course.students.append(student._personal_info.name)
+            student.courses.append(course.title)
+            print(
+                f"Student {student._personal_info.name} as been added to the course {course.title}"
+            )
         else:
-            self.student_courses[student_id].append(course_title)
-            self.course_students[course_title].append(student_id)
-            print(self.full_name, " enrolled this course")
+            print("Too many students or this student is already in the course")
 
-    def unenroll(self, student_id: int, course_title: str) -> None:
-
-        if student_id not in self.student_courses:
-            print(self.full_name, " currently unenrolled this course")
-        else:
-            del self.student_courses[course_title]
-            del self.course_students[student_id]
-            print(self.full_name, " unenrolled this course")
+    @staticmethod
+    def unenroll(course: Course, student: Student):
+        """Remove students from the course and course title from students courses"""
+        course.students.remove(student._personal_info.name)
+        student.courses.remove(course.title)
+        print(f"{student._personal_info.name} remove from course {course.title}")
 
 
-class Professor(Staff):
-    def send_request(self, department: Department, request: str) -> bool:
-        department.requests.update(request, False)
-        return True
-
-    def ask_sick_leave(self, department: Department) -> bool:
-        department.requests.update("Ask for leave", False)
-        return False
-
-    def add_postgraduate_student(self, student_id: int) -> None:
-        self.postgraduate_student.append(student_id)
-        del self.course_students[student_id]
-
-    def request_support(self, request: str) -> None:
-        pass
-
-
-
-def main():
-    """main function"""
-
-    personal_info1 = PersonalInfo(1, "first last", "address", "43 43 43", "email", "position", "rank", 4343.0)
-    course2 = Course("Fundamentals of C#", '01-01-2020', '01-05-2020', "5456")
-    professor2 = Professor("Dima")
-    course2.Professor = professor2
-    print(personal_info1.first_name, personal_info1.last_name, sep=" ")
-
-    # help(Student)
-
-
-if __name__ == "__main__":
-    main()
+assigment_1 = {
+    "title": "assigment_1",
+    "deskription": "deskription_1",
+    "is_done": True,
+    "mark": 0.0,
+}
+student1 = Student("Vitaliy Syn", "ds", "dsds", "dsds", None)
+course1 = Course("Programing", None, None, None, None, None, 10)
+professor1 = Professor("Oleh", None, None, None, None)
+department1 = Department("LNU department")
+student1.send_request(department1)
+print(department1.get_requests())
+Enrollment.enroll(course1, student1)
+Enrollment.unenroll(course1, student1)
+course1_progress = CourseProgress(received_marks={})
+course1_progress.fill_notes(date(2022, 10, 11), "1231")
+print(vars(course1_progress))
+course1_progress.remove_note(date(2022, 10, 11))
+print(vars(course1_progress))
