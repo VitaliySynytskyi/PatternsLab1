@@ -72,15 +72,16 @@ bus2 = Bus('FastBus', 36)
 person1 = Person('Vitaliy')
 person2 = Person('Andriy')
 route1 = Route(sch)
+route2 = Route(sch)
 route1.route_create(bus1, station_1, station_2)
-route1.route_create(bus2, station_3, station_4)
+route2.route_create(bus2, station_3, station_4)
 
 person1.buy_ticket(station_1, station_2, bus1)
 person2.buy_ticket(station_3, station_4, bus2)
 # sch.print_schedule()
 
 commit_route(person1, bus1, station_1, station_2, str(route1.route_info['routes'][0]['summary']['departureTime']), str(route1.route_info['routes'][0]['summary']['arrivalTime']))
-commit_route(person2, bus1, station_3, station_4, str(route1.route_info['routes'][0]['summary']['departureTime']), str(route1.route_info['routes'][0]['summary']['arrivalTime']))
+commit_route(person2, bus1, station_3, station_4, str(route2.route_info['routes'][0]['summary']['departureTime']), str(route2.route_info['routes'][0]['summary']['arrivalTime']))
 
 show_shedule()
 
