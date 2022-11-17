@@ -37,7 +37,7 @@ print("#" * 20)
 
     # delete data
 # with connection.cursor() as cursor:
-#     delete_query = "DELETE FROM `users` WHERE id = 5;"
+#     delete_query = "DELETE FROM `logistics` WHERE id = 5;"
 #     cursor.execute(delete_query)
 #     connection.commit()
 
@@ -81,7 +81,7 @@ person2.buy_ticket(station_3, station_4, bus2)
 # sch.print_schedule()
 
 commit_route(person1, bus1, station_1, station_2, str(route1.route_info['routes'][0]['summary']['departureTime']), str(route1.route_info['routes'][0]['summary']['arrivalTime']))
-commit_route(person2, bus1, station_3, station_4, str(route2.route_info['routes'][0]['summary']['departureTime']), str(route2.route_info['routes'][0]['summary']['arrivalTime']))
+commit_route(person2, bus2, station_3, station_4, str(route2.route_info['routes'][0]['summary']['departureTime']), str(route2.route_info['routes'][0]['summary']['arrivalTime']))
 
 show_shedule()
 
