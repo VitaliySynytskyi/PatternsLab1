@@ -1,6 +1,9 @@
 class Person:
-    def __init__(self,name):
-
+    """Represents of information about 'Passenger'.
+    Arguments:
+        name (str): Name of 'Passenger'.
+    """
+    def __init__(self, name):
         self.surname = name
         self.lisst = []
 

@@ -1,6 +1,5 @@
 from collections import defaultdict
 
-
 class Casa:
     def __init__(self):
         self.lisst = defaultdict(list)

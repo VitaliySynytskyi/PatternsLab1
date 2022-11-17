@@ -1,9 +1,8 @@
-import random
 from Person import Person
 from Route import Route
 from Schedule import Schedule
-from Station import Depo, Station
-from Transport import Bus, Train
+from Station import Station
+from Transport import Bus
 import pymysql
 from config import host, user, password, db_name
 
@@ -36,10 +35,15 @@ print("#" * 20)
 #     cursor.execute(drop_table_query)
 #     print("Table droped successfully")
 
+    # delete data
+# with connection.cursor() as cursor:
+#     delete_query = "DELETE FROM `users` WHERE id = 5;"
+#     cursor.execute(delete_query)
+#     connection.commit()
+
     # insert data
 def commit_route(person, transport, station_a, station_b, time_departure, time_arrive):
     with connection.cursor() as cursor:
-        route_number = random.randint(1, 1000)
         insert_query = f"INSERT INTO `logistics` (person, title, station1, station2, departureTime, arrivalTime) \
             VALUES ('{person.surname}', '{transport.title}', '{station_a.title}', '{station_b.title}','{time_departure}','{time_arrive}');"
         cursor.execute(insert_query)
@@ -59,22 +63,24 @@ def show_shedule():
         print("#" * 20)
 
 sch = Schedule('Schedule')
-station_1 = Station(1, 'Lviv', 49.8399319, 23.9937661)
-station_2 = Depo(2,'Kyiv', 51.4861639, 31.2691622)
-bus = Bus('ElectroBus', 30)
-station_4 = Station(1, 'Lviv', 49.8399319, 23.9937661)
-station_3 = Depo(2,'Depo2', 51.4861639, 31.2691622)
-train = Train('FastTrain', 150)
-chel_1 = Person('Vitaliy')
-
+station_1 = Station(1, 'Lviv TrainStation', 49.8399319, 23.9937661)
+station_2 = Station(2,'Kyiv', 51.4861639, 31.2691622)
+bus1 = Bus('ElectroBus', 30)
+station_4 = Station(4, 'Lviv BusStation', 49.7855405, 24.0148306)
+station_3 = Station(3,'Frankivsk', 48.9253122, 24.7235424)
+bus2 = Bus('FastBus', 36)
+person1 = Person('Vitaliy')
+person2 = Person('Andriy')
 route1 = Route(sch)
-route1.route_create(bus, station_1, station_2)
-route1.route_create(train, station_3, station_4)
+route1.route_create(bus1, station_1, station_2)
+route1.route_create(bus2, station_3, station_4)
 
-chel_1.buy_ticket(station_1, station_2, train)
+person1.buy_ticket(station_1, station_2, bus1)
+person2.buy_ticket(station_3, station_4, bus2)
 # sch.print_schedule()
 
-commit_route(chel_1, bus, station_1, station_2, str(route1.route_info['routes'][0]['summary']['departureTime']), str(route1.route_info['routes'][0]['summary']['arrivalTime']))
+commit_route(person1, bus1, station_1, station_2, str(route1.route_info['routes'][0]['summary']['departureTime']), str(route1.route_info['routes'][0]['summary']['arrivalTime']))
+commit_route(person2, bus1, station_3, station_4, str(route1.route_info['routes'][0]['summary']['departureTime']), str(route1.route_info['routes'][0]['summary']['arrivalTime']))
 
 show_shedule()
 
