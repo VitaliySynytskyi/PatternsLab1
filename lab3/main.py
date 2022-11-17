@@ -283,7 +283,7 @@ class Enrollment:
             course.students.append(student._personal_info.name)
             student.courses.append(course.title)
             print(
-                f"Student {student._personal_info.name} as been added to the course {course.title}"
+                f"Student {student._personal_info.name} has been added to the course {course.title}"
             )
         else:
             print("Too many students or this student is already in the course")
